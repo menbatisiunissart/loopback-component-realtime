@@ -10,14 +10,15 @@ export class DriverFactory {
 
     switch (name) {
       case 'socket.io':
-       driver = <DriverInterface> new IODriver();
+        driver = <DriverInterface> new IODriver();
       break;
       /*
       case 'kafka':
-       driver = <DriverInterface> new KafkaDriver();
+        driver = <DriverInterface> new KafkaDriver();
       break;
       */
       default:
+        driver = <DriverInterface> new IODriver();
       break;
     }
 

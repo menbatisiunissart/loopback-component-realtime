@@ -2,8 +2,8 @@ declare var require: any;
 import { DriverInterface } from '../types/driver';
 import { OptionsInterface } from '../types/options';
 import { RealTimeLog } from '../logger';
-import * as server from 'socket.io';
-import * as client from 'socket.io-client';
+import { Server } from "socket.io";
+import { io } from 'socket.io-client';
 import * as _ from 'underscore';
 
 export class IODriver implements DriverInterface {
@@ -11,18 +11,46 @@ export class IODriver implements DriverInterface {
   client: any;
   server: any;
   internal: any;
-  options: OptionsInterface;
+  options: any = {}
   connections: Array<any> = new Array();
-  private customAuthListener: Function;
+
+  serverInit(
+    server: any ,
+    options: any
+    ): Server {
+    return new Server(
+      server,
+      options
+    );
+  }
+
+  clientInit(
+    url: string,
+    options: any
+    ): any {
+    return io(url, options);
+  }
   /**
    * @method connect
    * @param {OptionsInterface} options
    * @description Will create a web socket server and then setup either clustering
    * and authentication functionalities.
    **/
-  connect(options?: OptionsInterface): any {
+  connect(options: OptionsInterface): any {
     this.options = options;
-    this.server = server(options.server, { transports: options.driver.options.transports });
+    let transports: any = {};
+    if (options
+      && options.driver
+      && options.driver.options
+      ) {
+        transports = options.driver.options.transports
+    } else {
+      throw new Error('IO driver Error: transports undefined');
+    }
+    this.server = this.serverInit(
+      options.server,
+      { transports }
+    );
     this.onConnection((socket: any) => this.newConnection(socket));
     this.setupClustering();
     this.setupAuthResolver();
@@ -162,7 +190,7 @@ export class IODriver implements DriverInterface {
    **/
   setupClient(): void {
     // Passing transport options if any (Mostly for clustered environments)
-    this.client = client(`http${this.options.secure ? 's' : ''}://127.0.0.1:${this.options.app.get('port')}`, {
+    this.client = this.clientInit(`http${this.options.secure ? 's' : ''}://127.0.0.1:${this.options.app.get('port')}`, {
       transports: ['websocket'],
       secure: this.options.secure
     });
@@ -181,7 +209,7 @@ export class IODriver implements DriverInterface {
    **/
   setupInternal(): void {
     // Passing transport options if any (Mostly for clustered environments)
-    this.internal = client(`http${this.options.secure ? 's' : ''}://127.0.0.1:${this.options.app.get('port')}`, {
+    this.internal = this.clientInit(`http${this.options.secure ? 's' : ''}://127.0.0.1:${this.options.app.get('port')}`, {
       transports: ['websocket'],
       secure: this.options.secure
     });
@@ -216,7 +244,7 @@ export class IODriver implements DriverInterface {
   }
 
   getUserConnection(userId: string): void {
-    if (!userId || userId === '') return null;
+    if (!userId || userId === '') return;
     let connection: any;
     this.forEachConnection((_connection: any) => {
       if (_connection.token && _connection.token.userId === userId) {
