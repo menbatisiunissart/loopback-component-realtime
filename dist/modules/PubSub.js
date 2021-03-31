@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var logger_1 = require("../logger");
+exports.PubSub = void 0;
+const logger_1 = require("../logger");
 /**
  * @module PubSub
  * @author Jonathan Casarrubias <t:@johncasarrubias, gh:github.com/mean-expert-official>
@@ -10,23 +11,23 @@ var logger_1 = require("../logger");
  * This module is created to implement PubSub Functionality into the LoopBack Framework.
  * This works with the SDK Builder and as a module of the FireLoop.io Framework
  */
-var PubSub = /** @class */ (function () {
-    function PubSub(driver, options) {
-        logger_1.RealTimeLog.log("PubSub server enabled using " + options.driver.name + " driver.");
+class PubSub {
+    constructor(driver, options) {
+        logger_1.RealTimeLog.log(`PubSub server enabled using ${options.driver.name} driver.`);
         PubSub.driver = driver;
         PubSub.options = options;
         return PubSub;
     }
-    PubSub.publish = function (options, next) {
+    static publish(options, next) {
         if (options && options.method && options.endpoint && options.data) {
             if (options.endpoint.match(/\?/))
                 options.endpoint = options.endpoint.split('?').shift();
-            var event_1 = "[" + options.method + "]" + options.endpoint;
+            let event = `[${options.method}]${options.endpoint}`;
             if (PubSub.options.debug) {
-                logger_1.RealTimeLog.log("Sending message to " + event_1);
-                logger_1.RealTimeLog.log("Message: " + (typeof options.data === 'object' ? JSON.stringify(options.data) : options.data));
+                logger_1.RealTimeLog.log(`Sending message to ${event}`);
+                logger_1.RealTimeLog.log(`Message: ${typeof options.data === 'object' ? JSON.stringify(options.data) : options.data}`);
             }
-            PubSub.driver.emit(event_1, options.data);
+            PubSub.driver.emit(event, options.data);
             next();
         }
         else {
@@ -34,8 +35,7 @@ var PubSub = /** @class */ (function () {
             logger_1.RealTimeLog.log(options);
             next();
         }
-    };
-    return PubSub;
-}());
+    }
+}
 exports.PubSub = PubSub;
-//# sourceMappingURL=/Volumes/BACKUP/development/loopback-component-realtime/src/modules/PubSub.js.map
+//# sourceMappingURL=PubSub.js.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var LoopBackContext = require('loopback-context');
+const LoopBackContext = require('loopback-context');
 /**
  * @module LoopBack Component PubSub - Mixin -
  * @author Jonathan Casarrubias <@johncasarrubias>
@@ -25,10 +25,10 @@ var LoopBackContext = require('loopback-context');
  *
  *  When sending a message, we may want to include the owner account.
  */
-var FireLoopMixin = /** @class */ (function () {
-    function FireLoopMixin(Model, options) {
+class FireLoopMixin {
+    constructor(Model, options) {
         options = Object.assign({ filters: {} }, options);
-        Model.observe('after save', function (ctx, next) {
+        Model.observe('after save', (ctx, next) => {
             Model.app.mx.IO.driver.server.to('flint').emit('create-hook', {
                 modelName: ctx.Model.modelName,
                 data: ctx.instance,
@@ -36,7 +36,7 @@ var FireLoopMixin = /** @class */ (function () {
             });
             next();
         });
-        Model.observe('after delete', function (ctx, next) {
+        Model.observe('after delete', (ctx, next) => {
             Model.app.mx.IO.driver.server.to('flint').emit('delete-hook', {
                 modelName: ctx.Model.modelName,
                 data: ctx.where
@@ -45,7 +45,6 @@ var FireLoopMixin = /** @class */ (function () {
         });
     }
     ;
-    return FireLoopMixin;
-}());
+}
 module.exports = FireLoopMixin;
-//# sourceMappingURL=/Volumes/BACKUP/development/loopback-component-realtime/src/mixins/fire-loop.js.map
+//# sourceMappingURL=fire-loop.js.map

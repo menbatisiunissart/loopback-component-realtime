@@ -1,7 +1,26 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var async = require("async");
-var LoopBackContext = require('loopback-context');
+const async = __importStar(require("async"));
+const LoopBackContext = require('loopback-context');
 /**
  * @module LoopBack Component PubSub - Mixin -
  * @author Jonathan Casarrubias <@johncasarrubias>
@@ -26,79 +45,73 @@ var LoopBackContext = require('loopback-context');
  *
  *  When sending a message, we may want to include the owner account.
  */
-var PubSubMixin = /** @class */ (function () {
-    function PubSubMixin(Model, options) {
+class PubSubMixin {
+    constructor(Model, options) {
         options = Object.assign({ filters: {} }, options);
-        Model.afterRemote('**', function (ctx, remoteMethodOutput, next) {
+        Model.afterRemote('**', (ctx, remoteMethodOutput, next) => {
             if (ctx.req.method === 'GET' || ctx.req.method === 'HEAD' ||
                 ctx.req.originalUrl.match(/resetPassword/g) ||
                 ctx.req.originalUrl.match(/log(in|out)/g))
                 return next();
             // If the message event is due link relationships
             if (ctx.methodString.match(/__(link|unlink)__/g)) {
-                var segments = ctx.methodString.replace(/__[a-zA-Z]+__/g, '').split('.');
-                var original_1 = ctx.req.originalUrl.split('/');
-                original_1.pop();
-                original_1 = original_1.join('/');
-                var current_1 = segments.shift();
-                var related_1 = segments.pop().split('');
-                related_1[0] = related_1[0].toUpperCase();
-                related_1.pop();
-                related_1 = related_1.join('');
-                var inverse_1 = ctx.req.originalUrl.split('/');
-                inverse_1.shift();
+                let segments = ctx.methodString.replace(/__[a-zA-Z]+__/g, '').split('.');
+                let original = ctx.req.originalUrl.split('/');
+                original.pop();
+                original = original.join('/');
+                let current = segments.shift();
+                let related = segments.pop().split('');
+                related[0] = related[0].toUpperCase();
+                related.pop();
+                related = related.join('');
+                let inverse = ctx.req.originalUrl.split('/');
+                inverse.shift();
                 // Send Forward and Backward Messages in Parallel
                 async.parallel([
                     // Send Forward Message
-                    function (next) {
-                        return Model.app.models[related_1].findOne(Object.assign({
-                            where: (_a = {}, _a[Model.app.models[related_1].getIdName()] = ctx.req.params.fk, _a)
-                        }, (options.filters[ctx.method.name] && options.filters[ctx.method.name].forFK) ?
-                            options.filters[ctx.method.name].forFK : {}), function (err, res) {
-                            if (err)
-                                return next(err);
-                            Model.app.mx.PubSub.publish({
-                                method: ctx.req.method,
-                                endpoint: original_1,
-                                data: res
-                            }, next);
-                        });
-                        var _a;
-                    },
+                    next => Model.app.models[related].findOne(Object.assign({
+                        where: { [Model.app.models[related].getIdName()]: ctx.req.params.fk }
+                    }, (options.filters[ctx.method.name] && options.filters[ctx.method.name].forFK) ?
+                        options.filters[ctx.method.name].forFK : {}), (err, res) => {
+                        if (err)
+                            return next(err);
+                        Model.app.mx.PubSub.publish({
+                            method: ctx.req.method,
+                            endpoint: original,
+                            data: res
+                        }, next);
+                    }),
                     // Send Backward Message
-                    function (next) {
-                        return Model.app.models[current_1].findOne(Object.assign({
-                            where: (_a = {}, _a[Model.app.models[current_1].getIdName()] = ctx.req.params[Model.app.models[current_1].getIdName()], _a)
-                        }, (options.filters[ctx.method.name] && options.filters[ctx.method.name].forPK) ?
-                            options.filters[ctx.method.name].forPK : {}), function (err, res) {
-                            if (err)
-                                return next(err);
-                            Model.app.mx.PubSub.publish({
-                                method: ctx.req.method,
-                                endpoint: '/' + [inverse_1[0], inverse_1[3], ctx.req.params.fk, inverse_1[1], inverse_1[4]].join('/'),
-                                data: res
-                            }, next);
-                        });
-                        var _a;
-                    }
+                    next => Model.app.models[current].findOne(Object.assign({
+                        where: { [Model.app.models[current].getIdName()]: ctx.req.params[Model.app.models[current].getIdName()] }
+                    }, (options.filters[ctx.method.name] && options.filters[ctx.method.name].forPK) ?
+                        options.filters[ctx.method.name].forPK : {}), (err, res) => {
+                        if (err)
+                            return next(err);
+                        Model.app.mx.PubSub.publish({
+                            method: ctx.req.method,
+                            endpoint: '/' + [inverse[0], inverse[3], ctx.req.params.fk, inverse[1], inverse[4]].join('/'),
+                            data: res
+                        }, next);
+                    })
                 ], next);
                 // Send Direct Message on Create Relation (not linking)
             }
             else if (ctx.methodString.match(/__(create)__/g)) {
-                var segments = ctx.methodString.replace(/__[a-zA-Z]+__/g, '').split('.');
-                var current = segments.shift();
+                let segments = ctx.methodString.replace(/__[a-zA-Z]+__/g, '').split('.');
+                let current = segments.shift();
                 if (options.filters[ctx.method.name]) {
-                    var method = Array.isArray(remoteMethodOutput) ? 'find' : 'findOne';
-                    var related = segments.pop().split('');
+                    let method = Array.isArray(remoteMethodOutput) ? 'find' : 'findOne';
+                    let related = segments.pop().split('');
                     related[0] = related[0].toUpperCase();
                     related.pop();
                     related = related.join('');
-                    var query = Object.assign({
-                        where: (_a = {},
-                            _a[Model.app.models[related].getIdName()] = remoteMethodOutput[Model.app.models[related].getIdName()],
-                            _a)
+                    let query = Object.assign({
+                        where: {
+                            [Model.app.models[related].getIdName()]: remoteMethodOutput[Model.app.models[related].getIdName()]
+                        }
                     }, options.filters[ctx.method.name]);
-                    Model.app.models[related][method](query, function (err, instance) {
+                    Model.app.models[related][method](query, (err, instance) => {
                         if (err)
                             return next(err);
                         if (!instance) {
@@ -125,8 +138,8 @@ var PubSubMixin = /** @class */ (function () {
             else {
                 if (options.filters[ctx.method.name]) {
                     // Send Direct Message with filters
-                    var method = Array.isArray(remoteMethodOutput) ? 'find' : 'findOne';
-                    Model[method](Object.assign({ where: remoteMethodOutput }, options.filters[ctx.method.name]), function (err, instance) {
+                    let method = Array.isArray(remoteMethodOutput) ? 'find' : 'findOne';
+                    Model[method](Object.assign({ where: remoteMethodOutput }, options.filters[ctx.method.name]), (err, instance) => {
                         if (err)
                             return next(err);
                         if (!instance) {
@@ -149,11 +162,9 @@ var PubSubMixin = /** @class */ (function () {
                     }, next);
                 }
             }
-            var _a;
         });
     }
     ;
-    return PubSubMixin;
-}());
+}
 module.exports = PubSubMixin;
-//# sourceMappingURL=/Volumes/BACKUP/development/loopback-component-realtime/src/mixins/pub-sub.js.map
+//# sourceMappingURL=pub-sub.js.map
