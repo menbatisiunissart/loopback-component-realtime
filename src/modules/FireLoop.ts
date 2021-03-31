@@ -86,40 +86,40 @@ export class FireLoop {
       });
     });
     // Setup Client Side Connection
-    FireLoop.driver.onConnection((socket: any) => {
-      socket.connContextId = FireLoop.buildId();
-      FireLoop.contexts[socket.connContextId] = {};
-      // Setup On Set Methods
-      Object.keys(FireLoop.options.app.models).forEach((modelName: string) =>
-        FireLoop.getReference(modelName, null, (Model: any) => {
-          // Setup reference subscriptions
-          socket.on(`Subscribe.${modelName}`, (subscription: SubscriptionInterface) => {
-            FireLoop.contexts[socket.connContextId][subscription.id] = {
-              id: subscription.id, modelName, Model, socket, subscription
-            };
-            // Register remote method events
-            FireLoop.setupRemoteMethods(FireLoop.contexts[socket.connContextId][subscription.id]);
-            // Iterate for writting events
-            FireLoop.events.writings.forEach((event: string) => {
-              FireLoop.setupModelWritings(FireLoop.contexts[socket.connContextId][subscription.id], event);
-              FireLoop.setupScopeWritings(FireLoop.contexts[socket.connContextId][subscription.id], event);
-            });
-            // Iterate for reading events
-            FireLoop.events.readings.forEach((event: string) => {
-              FireLoop.setupModelReadings(FireLoop.contexts[socket.connContextId][subscription.id], event);
-              FireLoop.setupScopeReadings(FireLoop.contexts[socket.connContextId][subscription.id], event);
-            });
-            // Register dispose method to removeAllListeners
-            FireLoop.setupDisposeReference(FireLoop.contexts[socket.connContextId][subscription.id]);
-          });
-        })
-      );
-      // Clean client contexts from the server memory when client disconnects :D
-      socket.on('disconnect', () => {
-        RealTimeLog.log(`FireLoop is releasing context tree with id ${socket.connContextId} from memory`);
-        delete FireLoop.contexts[socket.connContextId];
-      });
-    });
+    // FireLoop.driver.onConnection((socket: any) => {
+    //   socket.connContextId = FireLoop.buildId();
+    //   FireLoop.contexts[socket.connContextId] = {};
+    //   // Setup On Set Methods
+    //   Object.keys(FireLoop.options.app.models).forEach((modelName: string) =>
+    //     FireLoop.getReference(modelName, null, (Model: any) => {
+    //       // Setup reference subscriptions
+    //       socket.on(`Subscribe.${modelName}`, (subscription: SubscriptionInterface) => {
+    //         FireLoop.contexts[socket.connContextId][subscription.id] = {
+    //           id: subscription.id, modelName, Model, socket, subscription
+    //         };
+    //         // Register remote method events
+    //         FireLoop.setupRemoteMethods(FireLoop.contexts[socket.connContextId][subscription.id]);
+    //         // Iterate for writting events
+    //         FireLoop.events.writings.forEach((event: string) => {
+    //           FireLoop.setupModelWritings(FireLoop.contexts[socket.connContextId][subscription.id], event);
+    //           FireLoop.setupScopeWritings(FireLoop.contexts[socket.connContextId][subscription.id], event);
+    //         });
+    //         // Iterate for reading events
+    //         FireLoop.events.readings.forEach((event: string) => {
+    //           FireLoop.setupModelReadings(FireLoop.contexts[socket.connContextId][subscription.id], event);
+    //           FireLoop.setupScopeReadings(FireLoop.contexts[socket.connContextId][subscription.id], event);
+    //         });
+    //         // Register dispose method to removeAllListeners
+    //         FireLoop.setupDisposeReference(FireLoop.contexts[socket.connContextId][subscription.id]);
+    //       });
+    //     })
+    //   );
+    //   // Clean client contexts from the server memory when client disconnects :D
+    //   socket.on('disconnect', () => {
+    //     RealTimeLog.log(`FireLoop is releasing context tree with id ${socket.connContextId} from memory`);
+    //     delete FireLoop.contexts[socket.connContextId];
+    //   });
+    // });
   }
   /**
   * @method setupDisposeReference

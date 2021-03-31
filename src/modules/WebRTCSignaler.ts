@@ -21,28 +21,28 @@ export class WebRTCSignaler {
     RealTimeLog.log(`WebRTCSignaler server enabled using ${options.driver.name} driver.`);
     WebRTCSignaler.driver = driver;
     WebRTCSignaler.options = options;
-    WebRTCSignaler.driver.onConnection((socket: any) => {
-      let initiatorChannel: string = '';
-      socket.on('new-channel', (data: any) => {
-        if (!WebRTCSignaler.channels[data.channel]) {
-          initiatorChannel = data.channel;
-        }
+    // WebRTCSignaler.driver.onConnection((socket: any) => {
+    //   let initiatorChannel: string = '';
+    //   socket.on('new-channel', (data: any) => {
+    //     if (!WebRTCSignaler.channels[data.channel]) {
+    //       initiatorChannel = data.channel;
+    //     }
 
-        WebRTCSignaler.channels[data.channel] = data.channel;
-        WebRTCSignaler.onNewNamespace(data.channel, data.sender);
-      });
+    //     WebRTCSignaler.channels[data.channel] = data.channel;
+    //     WebRTCSignaler.onNewNamespace(data.channel, data.sender);
+    //   });
 
-      socket.on('presence', (channel: any) => {
-        var isChannelPresent = !!WebRTCSignaler.channels[channel];
-        socket.emit('presence', isChannelPresent);
-      });
+    //   socket.on('presence', (channel: any) => {
+    //     var isChannelPresent = !!WebRTCSignaler.channels[channel];
+    //     socket.emit('presence', isChannelPresent);
+    //   });
 
-      socket.on('disconnect', (channel: any) => {
-        if (initiatorChannel) {
-          delete WebRTCSignaler.channels[initiatorChannel];
-        }
-      });
-    });
+    //   socket.on('disconnect', (channel: any) => {
+    //     if (initiatorChannel) {
+    //       delete WebRTCSignaler.channels[initiatorChannel];
+    //     }
+    //   });
+    // });
     return WebRTCSignaler;
   }
 
@@ -65,7 +65,7 @@ export class WebRTCSignaler {
       socket.on('disconnect', () => {
         if (username) {
           socket.broadcast.emit('user-left', username);
-          username = null;
+          username = '';
         }
       });
     });
