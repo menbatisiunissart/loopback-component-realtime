@@ -7,7 +7,7 @@
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
     "package": "npm run build && cd ./tests && npm pack ../",
-    "install_test": "cd ./tests && rm -r node_modules && rm package-lock.json && npm install",
+    "install_test": "cd ./tests && rm -rf node_modules && rm -f package-lock.json && npm install",
     "start": "npm run package && npm run install_test && cd ./tests && node .",
     "release": "npm run build && npm publish",
     "postrelease": "rm -rf dist",
