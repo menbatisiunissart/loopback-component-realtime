@@ -1,11 +1,13 @@
 {
-  "name": "@mean-expert/loopback-component-realtime",
-  "version": "1.0.1",
-  "description": "The LoopBack Component that turns this great framework into a powerful real-time platform",
+  "name": "custom-loopback-component-realtime",
+  "version": "1.1.1",
+  "description": "Fork of loopback-component-realtime: The LoopBack Component that turns this great framework into a powerful real-time platform",
   "main": "index.js",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
+    "release": "npm run build && npm publish",
+    "postrelease": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -33,7 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mean-expert-official/loopback-component-realtime"
+    "url": "https://github.com/menbatisiunissart/loopback-component-realtime"
   },
   "dependencies": {
     "async": "^2.6.1",
