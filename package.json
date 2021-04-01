@@ -1,6 +1,6 @@
 {
   "name": "custom-loopback-component-realtime",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Fork of loopback-component-realtime: The LoopBack Component that turns this great framework into a powerful real-time platform",
   "main": "index.js",
   "scripts": {
