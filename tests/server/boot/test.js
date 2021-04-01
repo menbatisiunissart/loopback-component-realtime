@@ -1,6 +1,6 @@
 module.exports = function (app) {
   app.on('started', function () {
-    console.log('I STARTED?');
+    console.log('IO STARTED?');
     app.mx.IO.on('test', function (message) {
       console.log('RESPONSE: ', message);
     });
