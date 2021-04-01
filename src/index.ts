@@ -35,7 +35,12 @@ class RealTime {
     debug   : false,
     auth    : true,
     secure  : false,
-    modules : [ /*'PubSub' Deprecated,*/'IO', 'FireLoop' /*, 'WebRTCSignaler'  Not yet implemented */]
+    modules: [
+      'PubSub',
+      'IO', 
+      //'FireLoop',
+       /*, 'WebRTCSignaler'  Not yet implemented */
+      ]
   };
 
   constructor(app: any = undefined, options: OptionsInterface) {
