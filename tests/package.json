@@ -4,7 +4,6 @@
   "main": "server/server.js",
   "scripts": {
     "start": "cd ../src && tsc && cd ../tests && npm install ../ && node .",
-    "pretest": "eslint .",
     "posttest": "nsp check"
   },
   "dependencies": {
@@ -16,7 +15,8 @@
     "loopback-component-explorer": "^2.4.0",
     "loopback-datasource-juggler": "^2.39.0",
     "serve-favicon": "^2.0.1",
-    "strong-error-handler": "^1.0.1"
+    "strong-error-handler": "^1.0.1",
+    "custom-loopback-component-realtime": "file:custom-loopback-component-realtime-1.1.2.tgz"
   },
   "devDependencies": {
     "eslint": "^2.5.3",
