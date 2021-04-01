@@ -1,4 +1,14 @@
 
+This is a Fork of loopback-component-realtime.
+Original package [here](https://www.npmjs.com/package/@mean-expert/loopback-component-realtime).
+
+# Updates from original package
+
+- Enabled Pubsub mixin
+- Deprecated Fireloop mixin
+- Updated socket.io to v4
+- Updated socket.io-client to v4
+
 # LoopBack Component Real-Time
 
 A [LoopBack Framework](http://loopback.io) Component that provides publish events over WebSockets.
