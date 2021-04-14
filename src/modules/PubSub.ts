@@ -27,6 +27,37 @@ export class PubSub {
       if (options.endpoint.match(/\?/))
         options.endpoint = options.endpoint.split('?').shift();
       let event = `[${options.method}]${options.endpoint}`;
+      const { 
+        id,
+        projectId,
+        organizationId,
+        collectionId,
+      } = options.data;
+      if (id) {
+          options.data = {id};
+      }
+      if (projectId) {
+          options.data = {
+              ...options.data,
+              projectId
+          };
+      }
+      if (organizationId) {
+          options.data = {
+              ...options.data,
+              organizationId
+          };
+      }
+      if (collectionId) {
+          options.data = {
+              ...options.data,
+              collectionId
+          };
+      }
+      options.data = {
+          ...options.data,
+          method: options.method
+      };
       if (PubSub.options.debug) {
         RealTimeLog.log(`Sending message to ${event}`);
         RealTimeLog.log(`Message: ${typeof options.data === 'object' ? JSON.stringify(options.data) : options.data}`);
