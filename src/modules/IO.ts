@@ -23,7 +23,12 @@ export class IO {
   }
 
   static emit(event: string, message: any): void {
-    IO.driver.emit(event, typeof message === 'object' ? JSON.stringify(message) : message);
+    const data = typeof message === 'object' ? JSON.stringify(message) : message;
+    if (IO.options.debug) {
+        RealTimeLog.log("IO Server Sending message to " + event);
+        RealTimeLog.log("Message: " + data);
+    }
+    IO.driver.emit(event, data);
   }
 
   static on(event: string, next: Function): void {
